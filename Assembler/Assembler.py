@@ -1,9 +1,8 @@
 import sys
-import os
 import logging
 from pathlib import Path
 
-ROOT_PATH = Path(os.environ.get("USERPROFILE"), "Workspace", "nand2tetris", "projects", "06")
+
 __logger__ = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
@@ -39,7 +38,7 @@ class SymbolTable:
 
 class Reader:
     def __init__(self, path, output):
-        self.source = Path(ROOT_PATH, path)
+        self.source = Path(Path.cwd(), path)
         self.output = output
         self.symbol_table = SymbolTable()
         self.read_source()
@@ -84,7 +83,7 @@ class Translator:
         self.process_code()
 
     def process_code(self):
-        with open(Path(ROOT_PATH, self.output), "w") as outfile:
+        with open(Path(Path.cwd(), self.output), "w") as outfile:
             for assembly_code in self.code:
                 if assembly_code.startswith("@"):
                     instr = self.process_a_instruction(code_piece=assembly_code)
@@ -148,7 +147,7 @@ class Translator:
             jmp=dict()
         )
 
-        with open(Path(ROOT_PATH, "Assembler", "c_map.txt"), "r") as infile:
+        with open(Path(Path.cwd(), "c_instruction_map"), "r") as infile:
             for line in infile:
                 for field in self.C_FIELDS:
                     if line.find(f"<{field}>") > 0:
