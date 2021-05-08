@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 __logger__ = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 class SymbolTable:
@@ -37,13 +37,12 @@ class SymbolTable:
 
 
 class Reader:
-    def __init__(self, path, output):
+    def __init__(self, path):
         self.source = Path(Path.cwd(), path)
-        self.output = output
         self.symbol_table = SymbolTable()
-        self.read_source()
 
     def read_source(self):
+        __logger__.info(f"Reading in: {self.source}")
         with open(self.source, "r") as infile:
             program_code = list()
             line_counter = -1
@@ -54,7 +53,7 @@ class Reader:
                     if code_piece:
                         program_code.append(code_piece)
                         line_counter += 1
-            Translator(program_code, self.symbol_table, self.output)
+        return program_code, self.symbol_table
 
     def check_if_label(self, code_piece, counter):
         if code_piece.startswith("("):
@@ -74,15 +73,15 @@ class Translator:
     C_FILLER = 11
     C_FIELDS = ("comp", "dest", "jmp")
 
-    def __init__(self, code, symbol_table, output):
+    def __init__(self, code, symbol_table, source):
         self.next_free_mem = 16
         self.c_instruction_map = self._setup_c_map()
         self.code = code
         self.symbol_table = symbol_table
-        self.output = output
-        self.process_code()
+        self.source = source
+        self.output = self._set_output_file()
 
-    def process_code(self):
+    def translate(self):
         with open(Path(Path.cwd(), self.output), "w") as outfile:
             for assembly_code in self.code:
                 if assembly_code.startswith("@"):
@@ -92,6 +91,7 @@ class Translator:
                 outfile.write(instr + "\n")
 
     def process_a_instruction(self, code_piece):
+        __logger__.debug(f"Processing A instruction: {code_piece}")
         address_key = code_piece[1:]
         try:
             address = int(address_key)
@@ -157,8 +157,38 @@ class Translator:
                         c_map[field][key] = code
         return c_map
 
+    def _set_output_file(self):
+        return self.source.with_suffix(".hack")
+
+
+def is_asm_input(input_file):
+    if input_file.suffix != ".asm":
+        __logger__.info(f"Input file needs to be an.asm file - received: {input_file.suffix}")
+        sys.exit(3)
+    return True
+
+
+def _translate_assembly_to_hack(source_path):
+    source_code, symbol_table = Reader(path=source_path).read_source()
+    translator = Translator(source_code, symbol_table, source=source_path)
+    return translator.translate()
+
+
+def main(source_path):
+    if source_path.is_file() and is_asm_input(source_path):
+        return _translate_assembly_to_hack(source_path)
+    elif source_path.is_dir():
+        for file_obj in source_path.glob("*.asm"):
+            _translate_assembly_to_hack(file_obj)
+
 
 if __name__ == '__main__':
-    program_path = sys.argv[1]
-    output_path = sys.argv[2]
-    Reader(program_path, output_path)
+    try:
+        input_path = Path(sys.argv[1])
+    except IndexError:
+        __logger__.info(f"No input path received")
+        sys.exit(3)
+    if not input_path.exists():
+        __logger__.info(f"Path does not exists: {input_path}")
+        sys.exit(3)
+    main(source_path=input_path)
