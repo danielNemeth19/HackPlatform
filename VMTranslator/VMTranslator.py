@@ -126,13 +126,13 @@ class CodeWriter:
             self.copy_value_to_sp_loc()
 
     def push_segment_with_0_1(self, segment, value):
-        offset = "M + 1" if value else "M"
+        offset = "M+1" if value else "M"
         self.save_segment_addr_value_to_d(segment, offset)
         self.copy_value_to_sp_loc()
 
     def push_segment_with_offset(self, segment, offset):
         register_d = self.save_constant_to_d_register(value=offset)
-        offset = f"{register_d} + M"
+        offset = f"{register_d}+M"
         self.save_segment_addr_value_to_d(segment, offset)
         self.copy_value_to_sp_loc()
 
@@ -149,7 +149,7 @@ class CodeWriter:
             register_var = f"{segment}.{value}"
         else:
             register_var = f"{segment}{self.TEMP_OFFSET + value}"
-        self.assembly_codes.extend([f"@{register_var}", "D = M"])
+        self.assembly_codes.extend([f"@{register_var}", "D=M"])
 
     def pop_static_temp_segment(self, segment, value):
         self.decrease_stack_pointer(get_sp_loc_value=True)
@@ -157,7 +157,7 @@ class CodeWriter:
             register_var = f"{segment}.{value}"
         else:
             register_var = f"{segment}{self.TEMP_OFFSET + value}"
-        self.assembly_codes.extend([f"@{register_var}", "M = D"])
+        self.assembly_codes.extend([f"@{register_var}", "M=D"])
 
     def pop_to_segment_with_0_1(self, segment, offset):
         self.decrease_stack_pointer(get_sp_loc_value=True)
@@ -205,14 +205,14 @@ class CodeWriter:
     def increase_stack_pointer(self, increase_from_d=False):
         self.assembly_codes.append("@SP")
         base_register = "D" if increase_from_d else "M"
-        self.assembly_codes.append(f"M = {base_register} + 1")
+        self.assembly_codes.append(f"M={base_register}+1")
         return
 
     def decrease_stack_pointer(self, get_sp_loc_value=False):
         self.assembly_codes.append("@SP")
-        self.assembly_codes.append("AM = M - 1")
+        self.assembly_codes.append("AM=M-1")
         if get_sp_loc_value:
-            self.assembly_codes.append("D = M")
+            self.assembly_codes.append("D=M")
         return
 
     def activate_register_behind_stack_pointer(self):
@@ -422,7 +422,7 @@ class CodeWriter:
         for segment in ("LCL", "ARG", "THIS", "THAT"):
             self.assembly_codes.append(f"// -->Push {segment} of the caller")
             self.assembly_codes.append(f"@{segment}")
-            self.assembly_codes.append("D = M")
+            self.assembly_codes.append("D=M")
             self.copy_value_to_sp_loc()
             self.increase_stack_pointer()
 

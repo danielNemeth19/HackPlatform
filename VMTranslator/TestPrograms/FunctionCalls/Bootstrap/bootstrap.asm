@@ -7,39 +7,39 @@ D = A
 A = M
 M = D
 @SP
-M = M + 1
+M=M+1
 // -->Push LCL of the caller
 @LCL
-D = M
+D=M
 @SP
 A = M
 M = D
 @SP
-M = M + 1
+M=M+1
 // -->Push ARG of the caller
 @ARG
-D = M
+D=M
 @SP
 A = M
 M = D
 @SP
-M = M + 1
+M=M+1
 // -->Push THIS of the caller
 @THIS
-D = M
+D=M
 @SP
 A = M
 M = D
 @SP
-M = M + 1
+M=M+1
 // -->Push THAT of the caller
 @THAT
-D = M
+D=M
 @SP
 A = M
 M = D
 @SP
-M = M + 1
+M=M+1
 // -->Reposition of arg
 @5
 D = A
