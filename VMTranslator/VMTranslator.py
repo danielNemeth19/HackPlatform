@@ -217,7 +217,7 @@ class CodeWriter:
 
     def activate_register_behind_stack_pointer(self):
         self.assembly_codes.append("@SP")
-        self.assembly_codes.append("A = M - 1")
+        self.assembly_codes.append("A=M-1")
 
     def write_neg_not(self, arg1):
         self.activate_register_behind_stack_pointer()
@@ -262,13 +262,13 @@ class CodeWriter:
 
     def write_not_true_branch(self):
         self.activate_register_behind_stack_pointer()
-        self.assembly_codes.append("M = 0")
+        self.assembly_codes.append("M=0")
         return
 
     def write_true_branch_with_labels(self, label, done_label):
         self.assembly_codes.append(label)
         self.activate_register_behind_stack_pointer()
-        self.assembly_codes.append("M = -1")
+        self.assembly_codes.append("M=-1")
         self.assembly_codes.append(done_label)
         return
 
@@ -285,48 +285,48 @@ class CodeWriter:
 
     def write_arithmetic_function(self, arg1):
         func_map = {
-            "add": "M = M + D",
-            "sub": "M = M - D",
-            "eq": "D = M - D",
-            "lt": "D = M - D",
-            "gt": "D =  M - D",
-            "neg": "M = -M",
-            "and": "M = D & M",
-            "or": "M = D | M",
-            "not": "M = !M"
+            "add": "M=M+D",
+            "sub": "M=M-D",
+            "eq": "D=M-D",
+            "lt": "D=M-D",
+            "gt": "D=M-D",
+            "neg": "M=-M",
+            "and": "M=D&M",
+            "or": "M=D|M",
+            "not": "M=!M"
         }
         func = func_map[arg1]
         return self.assembly_codes.append(func)
 
     def save_pointer_to_d(self, pointer_of):
-        self.assembly_codes.extend([f"@{pointer_of}", "D = M"])
+        self.assembly_codes.extend([f"@{pointer_of}", "D=M"])
 
     def save_constant_to_d_register(self, value):
-        self.assembly_codes.extend([f"@{value}", "D = A"])
+        self.assembly_codes.extend([f"@{value}", "D=A"])
         return "D"
 
     def save_segment_addr_value_to_d(self, segment, offset_from_pointer):
         self.assembly_codes.append(f"@{segment}")
-        self.assembly_codes.append(f"A = {offset_from_pointer}")
-        self.assembly_codes.append("D = M")
+        self.assembly_codes.append(f"A={offset_from_pointer}")
+        self.assembly_codes.append("D=M")
 
     def increase_segment_base_addr_with_d(self, segment):
-        self.assembly_codes.extend([f"@{segment}", "D = D + M"])
+        self.assembly_codes.extend([f"@{segment}", "D=D+M"])
 
     def store_addr_to_variable(self, segment_address):
-        self.assembly_codes.extend([f"@{segment_address}", "M = D"])
+        self.assembly_codes.extend([f"@{segment_address}", "M=D"])
 
     def copy_value_to_sp_loc(self, value="D"):
         self.assembly_codes.append("@SP")
-        self.assembly_codes.append("A = M")
-        self.assembly_codes.append(f"M = {value}")
+        self.assembly_codes.append("A=M")
+        self.assembly_codes.append(f"M={value}")
         return
 
     def copy_d_to_segment_loc(self, segment, loc_modifier=False):
         self.assembly_codes.append(f"@{segment}")
-        addr = "A = M" if not loc_modifier else "A = M + 1"
+        addr = "A=M" if not loc_modifier else "A=M+1"
         self.assembly_codes.append(addr)
-        self.assembly_codes.append("M = D")
+        self.assembly_codes.append("M=D")
         return
 
     def write_label(self, arg1, arg2, comment):
@@ -341,7 +341,7 @@ class CodeWriter:
         self.assembly_codes.append(comment)
         self.decrease_stack_pointer(get_sp_loc_value=True)
         label_prefix = self.current_function if self.current_function else "null"
-        self.assembly_codes.extend([f"@{label_prefix}${arg1}", "D; JNE"])
+        self.assembly_codes.extend([f"@{label_prefix}${arg1}", "D;JNE"])
         return
 
     def write_goto(self, arg1, arg2, comment):
@@ -349,14 +349,14 @@ class CodeWriter:
         self.assembly_codes.append(comment)
         label_prefix = self.current_function if self.current_function else "null"
         self.assembly_codes.append(f"@{label_prefix}${arg1}")
-        self.assembly_codes.append("0; JMP")
+        self.assembly_codes.append("0;JMP")
         return
 
     def goto_return_address_in_callers_code(self):
         self.assembly_codes.append("// -->goto to return address")
         self.assembly_codes.append(f"@{self.RETURN_ADDR_REGISTER}")
-        self.assembly_codes.append("A = M")
-        self.assembly_codes.append("0; JMP")
+        self.assembly_codes.append("A=M")
+        self.assembly_codes.append("0;JMP")
 
     def write_function(self, arg1, arg2, comment):
         __logger__.debug(f"write function: {arg1}, {arg2}")
@@ -383,7 +383,7 @@ class CodeWriter:
 
     def save_retr_addr(self):
         self.assembly_codes.append("// -->Saving return address")
-        self.assembly_codes.extend([f"@{self.ENDFRAME_OFFSET}", "A = D - A", "D = M"])
+        self.assembly_codes.extend([f"@{self.ENDFRAME_OFFSET}", "A=D-A", "D=M"])
         self.store_addr_to_variable(self.RETURN_ADDR_REGISTER)
 
     def reposition_sp(self):
@@ -395,7 +395,7 @@ class CodeWriter:
         self.assembly_codes.append(f"// -->Restore {segment} of the caller")
         if offset != 1:
             offset = self.save_constant_to_d_register(offset)
-        self.assembly_codes.extend([f"@{self.ENDFRAME_REGISTER}", f"A = M - {offset}", "D = M"])
+        self.assembly_codes.extend([f"@{self.ENDFRAME_REGISTER}", f"A=M-{offset}", "D=M"])
         self.store_addr_to_variable(segment_address=segment)
 
     def write_return(self, _, __, comment):
@@ -413,7 +413,7 @@ class CodeWriter:
         self.assembly_codes.append("// -->Saving return address and pushing to stack")
         retr_var = f"{func_name}.{self.file_name}$ret.{call_count}"
         self.assembly_codes.append(f"@{retr_var}")
-        self.assembly_codes.append("D = A")
+        self.assembly_codes.append("D=A")
         self.copy_value_to_sp_loc()
         self.increase_stack_pointer()
         return retr_var
@@ -434,7 +434,7 @@ class CodeWriter:
             __logger__.debug(f"Function def incorrect: {number_of_args} should be an int")
             sys.exit(3)
         self.save_constant_to_d_register(num_of_args + self.CALL_POINTERS)
-        self.assembly_codes.extend([f"@SP", "D = M - D"])
+        self.assembly_codes.extend([f"@SP", "D=M-D"])
         self.store_addr_to_variable(segment_address="ARG")
 
     def reposition_lcl(self):
@@ -445,7 +445,7 @@ class CodeWriter:
     def goto_function(self, func_name):
         self.assembly_codes.append(f"// -->goto function now")
         self.assembly_codes.append(f"@{func_name}")
-        self.assembly_codes.append("0; JMP")
+        self.assembly_codes.append("0;JMP")
 
     def write_return_label(self, r_label):
         self.assembly_codes.append(f"// -->return label")

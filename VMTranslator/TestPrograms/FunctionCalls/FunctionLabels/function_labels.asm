@@ -3,100 +3,100 @@
 (null$LOOP)
 // if-goto LOOP
 @SP
-AM = M - 1
-D = M
+AM=M-1
+D=M
 @null$LOOP
-D; JNE
+D;JNE
 // label END
 (null$END)
 // goto END
 @null$END
-0; JMP
+0;JMP
 // function main.main 0
 (main.main)
 // label LOOP
 (main.main$LOOP)
 // if-goto LOOP
 @SP
-AM = M - 1
-D = M
+AM=M-1
+D=M
 @main.main$LOOP
-D; JNE
+D;JNE
 // label END
 (main.main$END)
 // goto END
 @main.main$END
-0; JMP
+0;JMP
 // function main.run 0
 (main.run)
 // label LOOP
 (main.run$LOOP)
 // if-goto LOOP
 @SP
-AM = M - 1
-D = M
+AM=M-1
+D=M
 @main.run$LOOP
-D; JNE
+D;JNE
 // label END
 (main.run$END)
 // goto END
 @main.run$END
-0; JMP
+0;JMP
 // return
 // -->Saving endframe
 @LCL
-D = M
+D=M
 @R13
-M = D
+M=D
 // -->Saving return address
 @5
-A = D - A
-D = M
+A=D-A
+D=M
 @R14
-M = D
+M=D
 // -->Reposition return value for the caller
 @SP
-AM = M - 1
-D = M
+AM=M-1
+D=M
 @ARG
-A = M
-M = D
+A=M
+M=D
 // -->Reposition SP of the caller
 @ARG
-D = M
+D=M
 @SP
-M = D + 1
+M=D+1
 // -->Restore THAT of the caller
 @R13
-A = M - 1
-D = M
+A=M-1
+D=M
 @THAT
-M = D
+M=D
 // -->Restore THIS of the caller
 @2
-D = A
+D=A
 @R13
-A = M - D
-D = M
+A=M-D
+D=M
 @THIS
-M = D
+M=D
 // -->Restore ARG of the caller
 @3
-D = A
+D=A
 @R13
-A = M - D
-D = M
+A=M-D
+D=M
 @ARG
-M = D
+M=D
 // -->Restore LCL of the caller
 @4
-D = A
+D=A
 @R13
-A = M - D
-D = M
+A=M-D
+D=M
 @LCL
-M = D
+M=D
 // -->goto to return address
 @R14
-A = M
-0; JMP
+A=M
+0;JMP
