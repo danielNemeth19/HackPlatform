@@ -1,4 +1,4 @@
-// Translating file: test_translate
+// Translating file: add
 // push constant 57
 @57
 D=A
@@ -30,18 +30,3 @@ D=M
 @SP
 A=M-1
 M=M+D
-// push constant 112
-@112
-D=A
-@SP
-A=M
-M=D
-@SP
-M=M+1
-// sub
-@SP
-AM=M-1
-D=M
-@SP
-A=M-1
-M=M-D

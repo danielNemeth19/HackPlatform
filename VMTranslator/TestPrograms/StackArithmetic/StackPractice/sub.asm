@@ -1,4 +1,4 @@
-// Translating file: test_translate
+// Translating file: sub
 // push constant 57
 @57
 D=A
