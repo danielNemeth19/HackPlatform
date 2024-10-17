@@ -26,3 +26,6 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
+
+# n2t-software-suite
+n2t-software-suite/
